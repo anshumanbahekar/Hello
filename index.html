@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello — Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --black: #080808;
+    --deep: #111111;
+    --surface: #181818;
+    --border: #2a2a2a;
+    --muted: #444444;
+    --mid: #888888;
+    --cream: #f0ebe3;
+    --white: #fafaf8;
+    --red: #c8364a;
+    --red-dim: #8a2233;
+    --gold: #b8975a;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Playfair Display', serif;
+    --light-serif: 'Cormorant Garamond', serif;
+    --radius: 2px;
+    --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+
+  /* ── TYPOGRAPHY ── */
+  h1, h2, h3 { font-family: var(--serif); font-weight: 700; letter-spacing: -0.02em; }
+  .display { font-family: var(--serif); font-style: italic; font-weight: 900; }
+  .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); }
+  .mono { font-family: var(--mono); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 10px 20px; border: 1px solid; cursor: pointer;
+    transition: var(--transition); text-decoration: none; border-radius: var(--radius);
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--red); border-color: var(--red); color: var(--white); }
+  .btn-primary:hover { background: var(--red-dim); border-color: var(--red-dim); }
+  .btn-outline { background: transparent; border-color: var(--border); color: var(--cream); }
+  .btn-outline:hover { border-color: var(--cream); }
+  .btn-ghost { background: transparent; border-color: transparent; color: var(--mid); padding: 8px 12px; }
+  .btn-ghost:hover { color: var(--cream); }
+  .btn-sm { padding: 6px 14px; font-size: 10px; }
+  .btn-icon { padding: 8px; border-radius: var(--radius); }
+
+  /* ── INPUTS ── */
+  input, textarea {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--cream); font-family: var(--mono); font-size: 13px;
+    padding: 12px 16px; outline: none; border-radius: var(--radius);
+    transition: border-color var(--transition); width: 100%;
+  }
+  input:focus, textarea:focus { border-color: var(--red); }
+  input::placeholder, textarea::placeholder { color: var(--muted); font-size: 12px; }
+  textarea { resize: vertical; min-height: 100px; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ══════════════════════════════════════
+     AUTH SCREEN
+  ══════════════════════════════════════ */
+  #auth-screen {
+    min-height: 100vh; display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-left {
+    background: var(--deep);
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 80px;
+    border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .auth-left::before {
+    content: 'Hello';
+    position: absolute; bottom: -40px; left: -20px;
+    font-family: var(--serif); font-size: 200px; font-weight: 900; font-style: italic;
+    color: var(--surface); letter-spacing: -10px; line-height: 1;
+    pointer-events: none; user-select: none;
+  }
+  .auth-left .tagline {
+    font-family: var(--light-serif); font-size: 48px; font-weight: 300; font-style: italic;
+    color: var(--cream); line-height: 1.2; margin-bottom: 24px; position: relative; z-index: 1;
+  }
+  .auth-left .desc {
+    color: var(--mid); font-size: 13px; max-width: 340px; line-height: 1.8; position: relative; z-index: 1;
+  }
+  .auth-left .red-line {
+    width: 48px; height: 3px; background: var(--red); margin-bottom: 32px;
+  }
+  .auth-right {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 80px;
+  }
+  .auth-box { width: 100%; max-width: 380px; }
+  .auth-logo { font-family: var(--serif); font-size: 28px; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 8px; }
+  .auth-logo span { color: var(--red); }
+  .auth-subtitle { color: var(--mid); margin-bottom: 48px; }
+  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .auth-tab {
+    flex: 1; padding: 12px; text-align: center; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--mid); border-bottom: 2px solid transparent; transition: var(--transition);
+  }
+  .auth-tab.active { color: var(--cream); border-bottom-color: var(--red); }
+  .auth-form { display: flex; flex-direction: column; gap: 16px; }
+  .auth-form.hidden { display: none; }
+  .form-group label { display: block; margin-bottom: 8px; }
+  .google-btn {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%; padding: 14px; background: transparent;
+    border: 1px solid var(--border); color: var(--cream);
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    cursor: pointer; transition: var(--transition); border-radius: var(--radius);
+  }
+  .google-btn:hover { border-color: var(--cream); }
+  .google-icon { width: 18px; height: 18px; }
+  .or-line {
+    display: flex; align-items: center; gap: 16px; color: var(--muted);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .or-line::before, .or-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .auth-error { color: var(--red); font-size: 12px; }
+
+  /* ══════════════════════════════════════
+     APP LAYOUT
+  ══════════════════════════════════════ */
+  #app-screen { display: none; }
+  #app-screen.active { display: grid; grid-template-columns: 260px 1fr 300px; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--deep); border-right: 1px solid var(--border);
+    padding: 32px 0; position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column; overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 0 28px 32px; border-bottom: 1px solid var(--border);
+    font-family: var(--serif); font-size: 22px; font-weight: 900; letter-spacing: -0.02em;
+  }
+  .sidebar-logo span { color: var(--red); }
+  .sidebar-section { padding: 24px 0; }
+  .sidebar-section-title { padding: 0 28px; margin-bottom: 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 28px; cursor: pointer; transition: var(--transition);
+    border-left: 3px solid transparent; color: var(--mid);
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .nav-item:hover { color: var(--cream); background: var(--surface); }
+  .nav-item.active { color: var(--cream); border-left-color: var(--red); background: var(--surface); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-user {
+    margin-top: auto; padding: 20px 28px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .sidebar-user:hover { background: var(--surface); }
+  .user-avatar-sm {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--gold);
+    flex-shrink: 0; overflow: hidden;
+  }
+  .user-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+  .sidebar-user-info { flex: 1; overflow: hidden; }
+  .sidebar-user-name { font-size: 13px; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-user-handle { font-size: 11px; color: var(--mid); }
+
+  /* ── MAIN FEED ── */
+  .main-feed { border-right: 1px solid var(--border); }
+  .feed-header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(8,8,8,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .feed-header h2 { font-size: 20px; }
+  .feed-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+  .feed-tab {
+    flex: 1; padding: 16px 32px; text-align: center; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--mid); border-bottom: 2px solid transparent; transition: var(--transition);
+  }
+  .feed-tab:hover { color: var(--cream); }
+  .feed-tab.active { color: var(--cream); border-bottom-color: var(--red); }
+
+  /* ── COMPOSE ── */
+  .compose-box {
+    padding: 28px 32px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 16px;
+  }
+  .compose-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--gold);
+    flex-shrink: 0; overflow: hidden; cursor: pointer;
+  }
+  .compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .compose-right { flex: 1; }
+  .compose-input {
+    background: transparent; border: none; font-family: var(--light-serif);
+    font-size: 18px; color: var(--cream); padding: 8px 0; resize: none;
+    line-height: 1.6; min-height: 60px;
+  }
+  .compose-input:focus { border: none; outline: none; }
+  .compose-input::placeholder { color: var(--muted); font-style: italic; }
+  .compose-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px; border-top: 1px solid var(--border); margin-top: 12px;
+  }
+  .compose-actions { display: flex; gap: 4px; }
+  .compose-act-btn {
+    background: transparent; border: none; color: var(--mid); cursor: pointer;
+    padding: 8px; border-radius: var(--radius); font-size: 16px;
+    transition: var(--transition);
+  }
+  .compose-act-btn:hover { color: var(--red); background: rgba(200,54,74,0.08); }
+  .char-count { font-size: 11px; color: var(--mid); }
+  .char-count.warning { color: var(--gold); }
+  .char-count.danger { color: var(--red); }
+  .compose-image-preview { position: relative; margin-top: 12px; display: none; }
+  .compose-image-preview img { width: 100%; max-height: 240px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--border); }
+  .remove-img-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,0.8); border: 1px solid var(--border);
+    color: var(--cream); width: 28px; height: 28px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+
+  /* ── POSTS ── */
+  .post {
+    padding: 24px 32px; border-bottom: 1px solid var(--border);
+    transition: background var(--transition); position: relative;
+  }
+  .post:hover { background: var(--deep); }
+  .post-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+  .post-avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--surface);
+    border: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--gold);
+    cursor: pointer;
+  }
+  .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .post-meta { flex: 1; }
+  .post-author { font-size: 14px; color: var(--white); font-weight: 500; cursor: pointer; }
+  .post-author:hover { text-decoration: underline; text-decoration-color: var(--red); }
+  .post-handle-time { color: var(--mid); font-size: 11px; }
+  .post-body { font-family: var(--light-serif); font-size: 16px; line-height: 1.8; color: var(--cream); margin-bottom: 16px; }
+  .post-image { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 16px; max-height: 400px; object-fit: cover; display: block; }
+  .post-actions { display: flex; gap: 24px; }
+  .post-action {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--mid); font-size: 12px; cursor: pointer;
+    transition: var(--transition); background: none; border: none;
+    font-family: var(--mono); padding: 0;
+  }
+  .post-action:hover { color: var(--red); }
+  .post-action.liked { color: var(--red); }
+  .post-action svg { width: 16px; height: 16px; }
+  .post-tag {
+    display: inline-block; background: rgba(200,54,74,0.12); color: var(--red);
+    font-size: 11px; padding: 2px 8px; border-radius: 2px; margin-right: 6px;
+    letter-spacing: 0.05em;
+  }
+  .no-posts { text-align: center; padding: 80px 32px; color: var(--muted); }
+  .no-posts h3 { font-family: var(--serif); font-size: 32px; font-style: italic; margin-bottom: 12px; color: var(--border); }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel { padding: 32px 24px; }
+  .search-box { position: relative; margin-bottom: 28px; }
+  .search-box input { padding-left: 42px; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+
+  .trending-card {
+    background: var(--deep); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; margin-bottom: 20px;
+  }
+  .trending-card h3 { font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+  .trending-item { padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-item:hover .trending-topic { color: var(--cream); }
+  .trending-rank { color: var(--red); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+  .trending-topic { font-size: 14px; color: var(--mid); transition: var(--transition); }
+  .trending-count { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .who-card {
+    background: var(--deep); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;
+  }
+  .who-card h3 { font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+  .who-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .who-avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--surface);
+    border: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--gold);
+  }
+  .who-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .who-info { flex: 1; overflow: hidden; }
+  .who-name { font-size: 13px; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who-handle { font-size: 11px; color: var(--mid); }
+
+  /* ── PROFILE VIEW ── */
+  .profile-header-img {
+    height: 180px; background: var(--surface); border-bottom: 1px solid var(--border);
+    position: relative;
+    background: linear-gradient(135deg, #1a0a0f 0%, #0d0d0d 50%, #0a0a14 100%);
+  }
+  .profile-cover-pattern {
+    position: absolute; inset: 0; opacity: 0.4;
+    background-image: repeating-linear-gradient(
+      45deg, var(--border) 0, var(--border) 1px,
+      transparent 0, transparent 50%
+    );
+    background-size: 20px 20px;
+  }
+  .profile-info { padding: 24px 32px; border-bottom: 1px solid var(--border); }
+  .profile-avatar-wrap { position: relative; margin-top: -56px; margin-bottom: 16px; }
+  .profile-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 3px solid var(--black); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 40px; font-weight: 700; color: var(--gold);
+    overflow: hidden;
+  }
+  .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-name { font-family: var(--serif); font-size: 28px; font-weight: 700; }
+  .profile-handle { color: var(--mid); margin-bottom: 12px; }
+  .profile-bio { font-family: var(--light-serif); font-size: 16px; color: var(--cream); line-height: 1.8; margin-bottom: 16px; max-width: 500px; }
+  .profile-stats { display: flex; gap: 32px; }
+  .stat { text-align: center; }
+  .stat-num { font-family: var(--serif); font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; }
+  .profile-actions { display: flex; gap: 12px; margin-top: 20px; }
+  .edit-profile-modal {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    display: none;
+  }
+  .edit-profile-modal.open { display: flex; }
+  .edit-modal-box {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: var(--radius); width: 90%; max-width: 520px; max-height: 90vh;
+    overflow-y: auto; padding: 40px;
+  }
+  .edit-modal-box h2 { font-size: 24px; margin-bottom: 32px; }
+  .edit-form { display: flex; flex-direction: column; gap: 20px; }
+  .edit-form label { display: block; margin-bottom: 8px; color: var(--mid); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .avatar-upload-wrap { display: flex; align-items: center; gap: 20px; }
+  .avatar-preview {
+    width: 72px; height: 72px; border-radius: 50%; background: var(--surface);
+    border: 1px solid var(--border); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 28px; color: var(--gold);
+  }
+  .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-close { position: absolute; top: 16px; right: 16px; }
+  .notification {
+    position: fixed; bottom: 32px; right: 32px; z-index: 200;
+    background: var(--deep); border: 1px solid var(--border);
+    padding: 16px 24px; border-radius: var(--radius);
+    font-size: 13px; transform: translateY(100px); opacity: 0;
+    transition: all 0.3s; max-width: 300px;
+  }
+  .notification.show { transform: translateY(0); opacity: 1; }
+  .notification.success { border-left: 3px solid var(--gold); }
+  .notification.error { border-left: 3px solid var(--red); }
+
+  /* ── LOADING ── */
+  .loader {
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px; gap: 8px;
+  }
+  .loader-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+
+  /* ── POST MODAL ── */
+  .post-modal {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .post-modal.open { display: flex; }
+  .post-modal-box {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: var(--radius); width: 90%; max-width: 640px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .post-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+  }
+  .post-modal-body { padding: 28px; }
+  .post-modal-comments { padding: 0 28px 28px; }
+  .comment { padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
+  .comment-body { flex: 1; }
+  .comment-author { font-size: 13px; color: var(--white); margin-bottom: 4px; }
+  .comment-text { font-family: var(--light-serif); font-size: 15px; color: var(--cream); line-height: 1.7; }
+  .comment-input-row { display: flex; gap: 12px; padding: 16px 28px; border-top: 1px solid var(--border); }
+  .comment-input-row input { flex: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    #app-screen.active { grid-template-columns: 220px 1fr; }
+    .right-panel { display: none; }
+  }
+  @media (max-width: 700px) {
+    #auth-screen { grid-template-columns: 1fr; }
+    .auth-left { display: none; }
+    #app-screen.active { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ AUTH SCREEN ═══════════════════════════════ -->
+<div id="auth-screen" class="screen active">
+  <div class="auth-left">
+    <div class="red-line"></div>
+    <div class="tagline">Where ideas find<br>their audience.</div>
+    <p class="desc">Hello is a space for thinkers, creators, and critics. Share without noise. Connect without pretense.</p>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <div class="auth-logo">Hell<span>o</span></div>
+      <p class="auth-subtitle label">The social layer for serious minds</p>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('signin')">Sign In</div>
+        <div class="auth-tab" onclick="switchTab('signup')">Create Account</div>
+      </div>
+
+      <!-- Google Sign In -->
+      <button class="google-btn" onclick="signInWithGoogle()" style="margin-bottom:20px;">
+        <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="or-line">or</div>
+
+      <!-- Sign In Form -->
+      <div id="signin-form" class="auth-form" style="margin-top:20px;">
+        <div class="form-group">
+          <label class="label">Email</label>
+          <input type="email" id="signin-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="label">Password</label>
+          <input type="password" id="signin-password" placeholder="Your password" />
+        </div>
+        <p id="signin-error" class="auth-error"></p>
+        <button class="btn btn-primary" onclick="signInEmail()" style="width:100%;justify-content:center;">Sign In</button>
+      </div>
+
+      <!-- Sign Up Form -->
+      <div id="signup-form" class="auth-form hidden" style="margin-top:20px;">
+        <div class="form-group">
+          <label class="label">Display Name</label>
+          <input type="text" id="signup-name" placeholder="Your name" />
+        </div>
+        <div class="form-group">
+          <label class="label">Email</label>
+          <input type="email" id="signup-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="label">Password</label>
+          <input type="password" id="signup-password" placeholder="Min 6 characters" />
+        </div>
+        <p id="signup-error" class="auth-error"></p>
+        <button class="btn btn-primary" onclick="signUpEmail()" style="width:100%;justify-content:center;">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ APP SCREEN ═══════════════════════════════ -->
+<div id="app-screen" class="screen">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">Hell<span>o</span></div>
+
+    <div class="sidebar-section">
+      <div class="nav-item active" onclick="showView('feed')" id="nav-feed">
+        <span class="nav-icon">&#9632;</span> Feed
+      </div>
+      <div class="nav-item" onclick="showView('explore')" id="nav-explore">
+        <span class="nav-icon">&#9651;</span> Explore
+      </div>
+      <div class="nav-item" onclick="showView('profile')" id="nav-profile">
+        <span class="nav-icon">&#9675;</span> Profile
+      </div>
+      <div class="nav-item" onclick="signOut()">
+        <span class="nav-icon">&#8592;</span> Sign Out
+      </div>
+    </div>
+
+    <div class="sidebar-user" onclick="showView('profile')">
+      <div class="user-avatar-sm" id="sidebar-avatar-wrap">
+        <span id="sidebar-avatar-initial"></span>
+      </div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+        <div class="sidebar-user-handle" id="sidebar-handle">@—</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-feed">
+
+    <!-- FEED VIEW -->
+    <div id="view-feed">
+      <div class="feed-header">
+        <h2>Feed</h2>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('compose-textarea').focus()">+ Post</button>
+      </div>
+      <div class="feed-tabs">
+        <div class="feed-tab active" onclick="loadFeed('all')">All Posts</div>
+        <div class="feed-tab" onclick="loadFeed('following')">Following</div>
+      </div>
+
+      <!-- Compose -->
+      <div class="compose-box">
+        <div class="compose-avatar" id="compose-avatar-wrap">
+          <span id="compose-avatar-initial"></span>
+        </div>
+        <div class="compose-right">
+          <textarea class="compose-input" id="compose-textarea" placeholder="What are you thinking about?" rows="2" oninput="updateCharCount()"></textarea>
+          <div id="compose-image-preview" class="compose-image-preview">
+            <img id="compose-preview-img" src="" alt="preview" />
+            <button class="remove-img-btn" onclick="removeImage()">&#215;</button>
+          </div>
+          <div class="compose-footer">
+            <div class="compose-actions">
+              <button class="compose-act-btn" title="Add image" onclick="document.getElementById('post-image-input').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </button>
+              <input type="file" id="post-image-input" accept="image/*" style="display:none" onchange="handleImageSelect(event)" />
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;">
+              <span class="char-count" id="char-count">280</span>
+              <button class="btn btn-primary btn-sm" onclick="submitPost()">Publish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts List -->
+      <div id="posts-list">
+        <div class="loader">
+          <div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLORE VIEW -->
+    <div id="view-explore" style="display:none;">
+      <div class="feed-header">
+        <h2>Explore</h2>
+      </div>
+      <div style="padding:32px;">
+        <div class="search-box" style="margin-bottom:32px;">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search posts, people, topics..." id="explore-search" oninput="handleSearch()" />
+        </div>
+        <div id="explore-results">
+          <div class="label" style="margin-bottom:24px;">Recent Posts</div>
+          <div id="explore-posts-list">
+            <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div id="view-profile" style="display:none;">
+      <div class="profile-header-img"><div class="profile-cover-pattern"></div></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar-wrap">
+            <span id="profile-avatar-initial"></span>
+          </div>
+        </div>
+        <h1 class="profile-name" id="profile-name">—</h1>
+        <p class="profile-handle" id="profile-handle">@—</p>
+        <p class="profile-bio" id="profile-bio"></p>
+        <div class="profile-stats">
+          <div class="stat"><div class="stat-num" id="stat-posts">0</div><div class="stat-label">Posts</div></div>
+          <div class="stat"><div class="stat-num" id="stat-followers">0</div><div class="stat-label">Followers</div></div>
+          <div class="stat"><div class="stat-num" id="stat-following">0</div><div class="stat-label">Following</div></div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn btn-outline btn-sm" onclick="openEditModal()">Edit Profile</button>
+          <button class="btn btn-ghost btn-sm" onclick="confirmDeleteAccount()">Delete Account</button>
+        </div>
+      </div>
+      <div class="feed-tabs"><div class="feed-tab active">Your Posts</div></div>
+      <div id="profile-posts-list">
+        <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search..." id="sidebar-search" oninput="handleSidebarSearch()" />
+    </div>
+
+    <div class="trending-card">
+      <h3>Trending</h3>
+      <div id="trending-list">
+        <div class="trending-item"><div class="trending-rank">01</div><div class="trending-topic">#design</div><div class="trending-count">Loading...</div></div>
+      </div>
+    </div>
+
+    <div class="who-card">
+      <h3>Who to Follow</h3>
+      <div id="who-list">
+        <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="edit-profile-modal" id="edit-modal">
+  <div class="edit-modal-box">
+    <h2>Edit Profile</h2>
+    <div class="edit-form">
+      <div>
+        <label>Profile Photo</label>
+        <div class="avatar-upload-wrap">
+          <div class="avatar-preview" id="edit-avatar-preview">
+            <span id="edit-avatar-preview-initial"></span>
+          </div>
+          <div>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('avatar-file').click()">Upload Photo</button>
+            <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="previewAvatar(event)" />
+            <p style="color:var(--mid);font-size:11px;margin-top:6px;">JPG or PNG, max 2MB</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label>Display Name</label>
+        <input type="text" id="edit-name" placeholder="Your name" />
+      </div>
+      <div>
+        <label>Bio</label>
+        <textarea id="edit-bio" placeholder="Tell people about yourself..." rows="3"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POST DETAIL MODAL -->
+<div class="post-modal" id="post-modal">
+  <div class="post-modal-box">
+    <div class="post-modal-header">
+      <h3 style="font-size:18px;">Post</h3>
+      <button class="btn btn-ghost btn-icon" onclick="closePostModal()">&#215;</button>
+    </div>
+    <div class="post-modal-body" id="post-modal-content"></div>
+    <div style="padding:0 28px 8px;"><div class="label">Comments</div></div>
+    <div class="post-modal-comments" id="post-modal-comments"></div>
+    <div class="comment-input-row">
+      <input type="text" id="comment-input" placeholder="Add a comment..." />
+      <button class="btn btn-primary btn-sm" onclick="submitComment()">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<!-- ═══════════════════════════════ FIREBASE ═══════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, signInWithPopup, GoogleAuthProvider,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut as fbSignOut, onAuthStateChanged, updateProfile, deleteUser
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc,
+  deleteDoc, query, orderBy, limit, where, onSnapshot, increment, arrayUnion, arrayRemove, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ── FIREBASE CONFIG ──
+// Replace with your own Firebase project config from https://console.firebase.google.com
+const firebaseConfig = {
+  apiKey: "AIzaSyBb9UMmLx2s3fc0dahGN2Tp0qi2ORenE4I",
+  authDomain: "hello-fffcb.firebaseapp.com",
+  projectId: "hello-fffcb",
+  storageBucket: "hello-fffcb.firebasestorage.app",
+  messagingSenderId: "707187612244",
+  appId: "1:707187612244:web:2f33978c68ab6c14fe6bc1",
+  measurementId: "G-PK9R69HXWW"
+};
+
+// ── CLOUDINARY CONFIG (FREE — no credit card needed) ──
+// 1. Sign up free at https://cloudinary.com
+// 2. Go to Settings > Upload > Upload presets > Add unsigned preset
+// 3. Copy your Cloud Name and preset name below
+const CLOUDINARY_CLOUD = "dh7c5skoc";      // e.g. "dxyz123abc"
+const CLOUDINARY_PRESET = "hello-social";   // e.g. "hello_social"
+
+// ── SETUP NOTES ──
+// Firebase (https://console.firebase.google.com) — free Spark plan:
+//   1. Create project
+//   2. Enable Authentication > Google & Email/Password
+//   3. Enable Firestore Database (start in test mode)
+// Cloudinary (https://cloudinary.com) — free forever (25GB storage, 25GB bandwidth/month):
+//   4. Create free account, go to Settings > Upload > Add unsigned preset
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── CLOUDINARY UPLOAD HELPER ──
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+    method: 'POST', body: formData
+  });
+  if (!res.ok) throw new Error('Image upload failed');
+  const data = await res.json();
+  return data.secure_url;
+}
+
+// ── STATE ──
+let currentUser = null;
+let currentUserProfile = null;
+let currentPostId = null;
+let postImageFile = null;
+let avatarFile = null;
+let allPostsUnsub = null;
+
+// ── EXPOSE TO WINDOW ──
+window.signInWithGoogle = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  } catch(e) { showNotification(e.message, 'error'); }
+};
+
+window.signInEmail = async () => {
+  const email = document.getElementById('signin-email').value.trim();
+  const pass = document.getElementById('signin-password').value;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    document.getElementById('signin-error').textContent = '';
+  } catch(e) {
+    document.getElementById('signin-error').textContent = friendlyError(e.code);
+  }
+};
+
+window.signUpEmail = async () => {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-password').value;
+  if (!name) { document.getElementById('signup-error').textContent = 'Enter a display name'; return; }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    await createUserProfile(cred.user, { displayName: name });
+    document.getElementById('signup-error').textContent = '';
+  } catch(e) {
+    document.getElementById('signup-error').textContent = friendlyError(e.code);
+  }
+};
+
+window.signOut = async () => {
+  await fbSignOut(auth);
+};
+
+window.submitPost = async () => {
+  const text = document.getElementById('compose-textarea').value.trim();
+  if (!text && !postImageFile) { showNotification('Write something first', 'error'); return; }
+  if (text.length > 280) { showNotification('Post is too long (max 280 chars)', 'error'); return; }
+
+  let imageUrl = null;
+  if (postImageFile) {
+    try {
+      showNotification('Uploading image...', 'success');
+      imageUrl = await uploadToCloudinary(postImageFile);
+    } catch(e) {
+      showNotification('Image upload failed', 'error'); return;
+    }
+  }
+
+  await addDoc(collection(db, 'posts'), {
+    uid: currentUser.uid,
+    authorName: currentUserProfile?.displayName || currentUser.displayName || 'Anonymous',
+    authorHandle: currentUserProfile?.handle || generateHandle(currentUser.displayName),
+    authorAvatar: currentUserProfile?.photoURL || currentUser.photoURL || null,
+    text,
+    imageUrl,
+    likes: [],
+    commentsCount: 0,
+    createdAt: serverTimestamp()
+  });
+
+  document.getElementById('compose-textarea').value = '';
+  postImageFile = null;
+  document.getElementById('compose-image-preview').style.display = 'none';
+  document.getElementById('char-count').textContent = '280';
+  document.getElementById('char-count').className = 'char-count';
+  showNotification('Post published', 'success');
+  await updateDoc(doc(db, 'users', currentUser.uid), { postsCount: increment(1) });
+};
+
+window.handleImageSelect = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showNotification('Image too large (max 5MB)', 'error'); return; }
+  postImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('compose-preview-img').src = ev.target.result;
+    document.getElementById('compose-image-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeImage = () => {
+  postImageFile = null;
+  document.getElementById('compose-image-preview').style.display = 'none';
+  document.getElementById('post-image-input').value = '';
+};
+
+window.updateCharCount = () => {
+  const len = document.getElementById('compose-textarea').value.length;
+  const rem = 280 - len;
+  const el = document.getElementById('char-count');
+  el.textContent = rem;
+  el.className = 'char-count' + (rem < 20 ? ' danger' : rem < 60 ? ' warning' : '');
+};
+
+window.toggleLike = async (postId) => {
+  if (!currentUser) return;
+  const postRef = doc(db, 'posts', postId);
+  const postSnap = await getDoc(postRef);
+  const likes = postSnap.data()?.likes || [];
+  if (likes.includes(currentUser.uid)) {
+    await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+  } else {
+    await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+  }
+};
+
+window.deletePost = async (postId) => {
+  if (!confirm('Delete this post?')) return;
+  await deleteDoc(doc(db, 'posts', postId));
+  await updateDoc(doc(db, 'users', currentUser.uid), { postsCount: increment(-1) });
+  showNotification('Post deleted', 'success');
+};
+
+window.openPostModal = async (postId) => {
+  currentPostId = postId;
+  const postSnap = await getDoc(doc(db, 'posts', postId));
+  if (!postSnap.exists()) return;
+  const post = { id: postId, ...postSnap.data() };
+  document.getElementById('post-modal-content').innerHTML = renderPostBody(post, false);
+  loadComments(postId);
+  document.getElementById('post-modal').classList.add('open');
+};
+
+window.closePostModal = () => {
+  document.getElementById('post-modal').classList.remove('open');
+  currentPostId = null;
+};
+
+window.submitComment = async () => {
+  const text = document.getElementById('comment-input').value.trim();
+  if (!text || !currentPostId) return;
+  await addDoc(collection(db, 'posts', currentPostId, 'comments'), {
+    uid: currentUser.uid,
+    authorName: currentUserProfile?.displayName || currentUser.displayName || 'Anonymous',
+    text,
+    createdAt: serverTimestamp()
+  });
+  await updateDoc(doc(db, 'posts', currentPostId), { commentsCount: increment(1) });
+  document.getElementById('comment-input').value = '';
+  loadComments(currentPostId);
+};
+
+window.showView = (view) => {
+  ['feed','explore','profile'].forEach(v => {
+    document.getElementById(`view-${v}`).style.display = v === view ? 'block' : 'none';
+    document.getElementById(`nav-${v}`)?.classList.toggle('active', v === view);
+  });
+  if (view === 'profile') loadProfile();
+  if (view === 'explore') loadExplorePosts();
+};
+
+window.loadFeed = (type) => {
+  document.querySelectorAll('.feed-tab').forEach((t,i) => t.classList.toggle('active', (type==='all'&&i===0)||(type==='following'&&i===1)));
+  if (type === 'all') subscribeAllPosts();
+  else subscribeFollowingPosts();
+};
+
+window.openEditModal = () => {
+  document.getElementById('edit-name').value = currentUserProfile?.displayName || '';
+  document.getElementById('edit-bio').value = currentUserProfile?.bio || '';
+  updateEditAvatarPreview();
+  document.getElementById('edit-modal').classList.add('open');
+};
+
+window.closeEditModal = () => { document.getElementById('edit-modal').classList.remove('open'); avatarFile = null; };
+
+window.previewAvatar = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  avatarFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const wrap = document.getElementById('edit-avatar-preview');
+    wrap.innerHTML = `<img src="${ev.target.result}" alt="avatar" style="width:100%;height:100%;object-fit:cover;" />`;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.saveProfile = async () => {
+  const newName = document.getElementById('edit-name').value.trim();
+  const newBio = document.getElementById('edit-bio').value.trim();
+  let photoURL = currentUserProfile?.photoURL || null;
+
+  if (avatarFile) {
+    try {
+      showNotification('Uploading photo...', 'success');
+      photoURL = await uploadToCloudinary(avatarFile);
+    } catch(e) {
+      showNotification('Photo upload failed', 'error'); return;
+    }
+  }
+
+  const updates = { displayName: newName, bio: newBio, photoURL };
+  await updateDoc(doc(db, 'users', currentUser.uid), updates);
+  await updateProfile(currentUser, { displayName: newName, photoURL });
+  currentUserProfile = { ...currentUserProfile, ...updates };
+
+  updateUIForUser();
+  closeEditModal();
+  loadProfile();
+  showNotification('Profile updated', 'success');
+};
+
+window.confirmDeleteAccount = async () => {
+  if (!confirm('Permanently delete your account and all posts? This cannot be undone.')) return;
+  const postsQ = query(collection(db, 'posts'), where('uid', '==', currentUser.uid));
+  const postsSnap = await getDocs(postsQ);
+  for (const p of postsSnap.docs) await deleteDoc(p.ref);
+  await deleteDoc(doc(db, 'users', currentUser.uid));
+  await deleteUser(currentUser);
+  showNotification('Account deleted', 'success');
+};
+
+window.followUser = async (uid) => {
+  if (!currentUser || uid === currentUser.uid) return;
+  const meRef = doc(db, 'users', currentUser.uid);
+  const themRef = doc(db, 'users', uid);
+  const meSnap = await getDoc(meRef);
+  const following = meSnap.data()?.following || [];
+  if (following.includes(uid)) {
+    await updateDoc(meRef, { following: arrayRemove(uid) });
+    await updateDoc(themRef, { followersCount: increment(-1) });
+  } else {
+    await updateDoc(meRef, { following: arrayUnion(uid) });
+    await updateDoc(themRef, { followersCount: increment(1) });
+  }
+  loadWhoToFollow();
+};
+
+window.handleSearch = () => {
+  const q = document.getElementById('explore-search').value.trim().toLowerCase();
+  loadExplorePosts(q);
+};
+
+window.handleSidebarSearch = () => {
+  const q = document.getElementById('sidebar-search').value.trim().toLowerCase();
+  if (q.length > 0) showView('explore');
+  document.getElementById('explore-search').value = q;
+  loadExplorePosts(q);
+};
+
+// ── INTERNALS ──
+
+async function createUserProfile(user, extra = {}) {
+  const ref2 = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref2);
+  if (!snap.exists()) {
+    await setDoc(ref2, {
+      uid: user.uid,
+      displayName: extra.displayName || user.displayName || 'Anonymous',
+      handle: generateHandle(extra.displayName || user.displayName),
+      photoURL: user.photoURL || null,
+      bio: '',
+      postsCount: 0,
+      followersCount: 0,
+      following: [],
+      createdAt: serverTimestamp()
+    });
+  }
+}
+
+function generateHandle(name) {
+  if (!name) return 'user' + Math.floor(Math.random()*9999);
+  return name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + Math.floor(Math.random()*99);
+}
+
+function subscribeAllPosts() {
+  if (allPostsUnsub) allPostsUnsub();
+  const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(40));
+  allPostsUnsub = onSnapshot(q, (snap) => {
+    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPosts(posts, 'posts-list');
+  });
+}
+
+async function subscribeFollowingPosts() {
+  if (allPostsUnsub) allPostsUnsub();
+  const meSnap = await getDoc(doc(db, 'users', currentUser.uid));
+  const following = meSnap.data()?.following || [];
+  if (!following.length) {
+    document.getElementById('posts-list').innerHTML = `<div class="no-posts"><h3>No one followed yet</h3><p style="color:var(--muted);">Follow people to see their posts here</p></div>`;
+    return;
+  }
+  const q = query(collection(db, 'posts'), where('uid', 'in', following.slice(0,10)), orderBy('createdAt','desc'), limit(40));
+  allPostsUnsub = onSnapshot(q, (snap) => {
+    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPosts(posts, 'posts-list');
+  });
+}
+
+async function loadExplorePosts(searchTerm = '') {
+  const listEl = document.getElementById('explore-posts-list');
+  listEl.innerHTML = `<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>`;
+  const q = query(collection(db, 'posts'), orderBy('createdAt','desc'), limit(50));
+  const snap = await getDocs(q);
+  let posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  if (searchTerm) posts = posts.filter(p => p.text?.toLowerCase().includes(searchTerm) || p.authorName?.toLowerCase().includes(searchTerm));
+  renderPosts(posts, 'explore-posts-list');
+}
+
+async function loadProfile() {
+  if (!currentUser) return;
+  const snap = await getDoc(doc(db, 'users', currentUser.uid));
+  currentUserProfile = snap.data();
+  const p = currentUserProfile;
+
+  document.getElementById('profile-name').textContent = p?.displayName || 'Anonymous';
+  document.getElementById('profile-handle').textContent = '@' + (p?.handle || '—');
+  document.getElementById('profile-bio').textContent = p?.bio || '';
+  document.getElementById('stat-posts').textContent = p?.postsCount || 0;
+  document.getElementById('stat-followers').textContent = p?.followersCount || 0;
+  document.getElementById('stat-following').textContent = (p?.following || []).length;
+
+  const avatarWrap = document.getElementById('profile-avatar-wrap');
+  if (p?.photoURL) {
+    avatarWrap.innerHTML = `<img src="${p.photoURL}" alt="avatar" />`;
+  } else {
+    document.getElementById('profile-avatar-initial').textContent = (p?.displayName || 'A')[0].toUpperCase();
+  }
+
+  const q = query(collection(db, 'posts'), where('uid', '==', currentUser.uid), orderBy('createdAt','desc'));
+  const postsSnap = await getDocs(q);
+  const posts = postsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderPosts(posts, 'profile-posts-list');
+}
+
+async function loadComments(postId) {
+  const q = query(collection(db, 'posts', postId, 'comments'), orderBy('createdAt', 'asc'));
+  const snap = await getDocs(q);
+  const comments = snap.docs.map(d => d.data());
+  const el = document.getElementById('post-modal-comments');
+  if (!comments.length) { el.innerHTML = `<p style="color:var(--muted);padding:16px 0;font-size:12px;">No comments yet. Start the conversation.</p>`; return; }
+  el.innerHTML = comments.map(c => `
+    <div class="comment">
+      <div class="who-avatar">${(c.authorName || 'A')[0].toUpperCase()}</div>
+      <div class="comment-body">
+        <div class="comment-author">${escHtml(c.authorName || 'Anonymous')}</div>
+        <div class="comment-text">${escHtml(c.text)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadTrending() {
+  const q = query(collection(db, 'posts'), orderBy('createdAt','desc'), limit(50));
+  const snap = await getDocs(q);
+  const tagCount = {};
+  snap.docs.forEach(d => {
+    const text = d.data().text || '';
+    const tags = text.match(/#[a-zA-Z0-9_]+/g) || [];
+    tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1; });
+  });
+  const sorted = Object.entries(tagCount).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const el = document.getElementById('trending-list');
+  if (!sorted.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;">No trending topics yet</div>`; return; }
+  el.innerHTML = sorted.map(([tag, count], i) => `
+    <div class="trending-item" onclick="document.getElementById('explore-search').value='${tag}';showView('explore');handleSearch();">
+      <div class="trending-rank">0${i+1}</div>
+      <div class="trending-topic">${escHtml(tag)}</div>
+      <div class="trending-count">${count} post${count !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+}
+
+async function loadWhoToFollow() {
+  const el = document.getElementById('who-list');
+  const meSnap = await getDoc(doc(db, 'users', currentUser.uid));
+  const following = meSnap.data()?.following || [];
+
+  const q = query(collection(db, 'users'), limit(10));
+  const snap = await getDocs(q);
+  const others = snap.docs.filter(d => d.id !== currentUser.uid).slice(0,5);
+
+  if (!others.length) { el.innerHTML = `<div style="color:var(--muted);font-size:12px;">No other users yet</div>`; return; }
+  el.innerHTML = others.map(d => {
+    const u = d.data();
+    const isFollowing = following.includes(d.id);
+    const initial = (u.displayName || 'A')[0].toUpperCase();
+    const avatarHtml = u.photoURL
+      ? `<div class="who-avatar"><img src="${u.photoURL}" alt="" /></div>`
+      : `<div class="who-avatar">${initial}</div>`;
+    return `
+      <div class="who-item">
+        ${avatarHtml}
+        <div class="who-info">
+          <div class="who-name">${escHtml(u.displayName || 'Anonymous')}</div>
+          <div class="who-handle">@${escHtml(u.handle || '—')}</div>
+        </div>
+        <button class="btn btn-sm ${isFollowing ? 'btn-ghost' : 'btn-outline'}" onclick="followUser('${d.id}')">
+          ${isFollowing ? 'Unfollow' : 'Follow'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPosts(posts, containerId) {
+  const el = document.getElementById(containerId);
+  if (!posts.length) {
+    el.innerHTML = `<div class="no-posts"><h3>Nothing here yet</h3><p style="color:var(--muted);">Be the first to post something</p></div>`;
+    return;
+  }
+  el.innerHTML = posts.map(p => renderPostCard(p)).join('');
+}
+
+function renderPostCard(p) {
+  const liked = (p.likes || []).includes(currentUser?.uid);
+  const isOwner = p.uid === currentUser?.uid;
+  const initial = (p.authorName || 'A')[0].toUpperCase();
+  const avatarHtml = p.authorAvatar
+    ? `<div class="post-avatar"><img src="${p.authorAvatar}" alt="" /></div>`
+    : `<div class="post-avatar">${initial}</div>`;
+  const ts = p.createdAt?.toDate ? timeAgo(p.createdAt.toDate()) : 'just now';
+  return `
+    <div class="post fade-in" id="post-${p.id}">
+      <div class="post-header">
+        ${avatarHtml}
+        <div class="post-meta">
+          <div class="post-author">${escHtml(p.authorName || 'Anonymous')}</div>
+          <div class="post-handle-time">@${escHtml(p.authorHandle || '—')} &middot; ${ts}</div>
+        </div>
+        ${isOwner ? `<button class="btn btn-ghost btn-icon" onclick="deletePost('${p.id}')" title="Delete post" style="margin-left:auto;font-size:18px;color:var(--muted);">&#215;</button>` : ''}
+      </div>
+      <div class="post-body">${formatText(p.text || '')}</div>
+      ${p.imageUrl ? `<img class="post-image" src="${p.imageUrl}" alt="post image" loading="lazy" />` : ''}
+      <div class="post-actions">
+        <button class="post-action ${liked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          ${(p.likes || []).length}
+        </button>
+        <button class="post-action" onclick="openPostModal('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          ${p.commentsCount || 0}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderPostBody(p, compact = true) {
+  const initial = (p.authorName || 'A')[0].toUpperCase();
+  const avatarHtml = p.authorAvatar
+    ? `<div class="post-avatar"><img src="${p.authorAvatar}" alt="" /></div>`
+    : `<div class="post-avatar">${initial}</div>`;
+  return `
+    <div class="post-header">
+      ${avatarHtml}
+      <div class="post-meta">
+        <div class="post-author">${escHtml(p.authorName || 'Anonymous')}</div>
+        <div class="post-handle-time">@${escHtml(p.authorHandle || '—')}</div>
+      </div>
+    </div>
+    <div class="post-body">${formatText(p.text || '')}</div>
+    ${p.imageUrl ? `<img class="post-image" src="${p.imageUrl}" alt="post image" />` : ''}
+  `;
+}
+
+function updateUIForUser() {
+  const profile = currentUserProfile;
+  const displayName = profile?.displayName || currentUser?.displayName || 'Anonymous';
+  const handle = profile?.handle || '—';
+  const photoURL = profile?.photoURL || currentUser?.photoURL || null;
+  const initial = displayName[0].toUpperCase();
+
+  document.getElementById('sidebar-name').textContent = displayName;
+  document.getElementById('sidebar-handle').textContent = '@' + handle;
+
+  const avatarWrap = document.getElementById('sidebar-avatar-wrap');
+  if (photoURL) {
+    avatarWrap.innerHTML = `<img src="${photoURL}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  } else {
+    avatarWrap.innerHTML = `<span>${initial}</span>`;
+  }
+
+  const composeWrap = document.getElementById('compose-avatar-wrap');
+  if (photoURL) {
+    composeWrap.innerHTML = `<img src="${photoURL}" alt="avatar" />`;
+  } else {
+    document.getElementById('compose-avatar-initial').textContent = initial;
+  }
+}
+
+function updateEditAvatarPreview() {
+  const wrap = document.getElementById('edit-avatar-preview');
+  const photoURL = currentUserProfile?.photoURL;
+  const name = currentUserProfile?.displayName || 'A';
+  if (photoURL) {
+    wrap.innerHTML = `<img src="${photoURL}" alt="avatar" style="width:100%;height:100%;object-fit:cover;" />`;
+  } else {
+    wrap.innerHTML = `<span id="edit-avatar-preview-initial">${name[0].toUpperCase()}</span>`;
+  }
+}
+
+function formatText(text) {
+  return escHtml(text)
+    .replace(/#([a-zA-Z0-9_]+)/g, '<span class="post-tag">#$1</span>')
+    .replace(/\n/g, '<br/>');
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function timeAgo(date) {
+  const secs = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (secs < 60) return 'just now';
+  if (secs < 3600) return Math.floor(secs/60) + 'm ago';
+  if (secs < 86400) return Math.floor(secs/3600) + 'h ago';
+  return Math.floor(secs/86400) + 'd ago';
+}
+
+function friendlyError(code) {
+  const map = {
+    'auth/invalid-email': 'Invalid email address',
+    'auth/user-not-found': 'No account with this email',
+    'auth/wrong-password': 'Wrong password',
+    'auth/email-already-in-use': 'Email already in use',
+    'auth/weak-password': 'Password must be 6+ characters',
+    'auth/too-many-requests': 'Too many attempts. Try again later',
+  };
+  return map[code] || 'Something went wrong. Try again.';
+}
+
+window.showNotification = (msg, type = 'success') => {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.className = `notification ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+};
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    await createUserProfile(user);
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    currentUserProfile = snap.data();
+
+    document.getElementById('auth-screen').classList.remove('active');
+    document.getElementById('app-screen').classList.add('active');
+
+    updateUIForUser();
+    subscribeAllPosts();
+    loadTrending();
+    loadWhoToFollow();
+
+    // Show feed view
+    showView('feed');
+  } else {
+    currentUser = null;
+    currentUserProfile = null;
+    if (allPostsUnsub) allPostsUnsub();
+    document.getElementById('app-screen').classList.remove('active');
+    document.getElementById('auth-screen').classList.add('active');
+  }
+});
+</script>
+
+<script>
+// ── Non-module helpers ──
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='signin'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('signin-form').classList.toggle('hidden', tab !== 'signin');
+  document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+}
+
+// Close modal on backdrop click
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.getElementById('post-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePostModal();
+});
+
+// Enter to comment
+document.getElementById('comment-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitComment();
+});
+</script>
+</body>
+</html>
